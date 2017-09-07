@@ -1,4 +1,4 @@
-defmodule Rover.Movement do
+defmodule Rover.Rotation do
   def rotate_left(current) do
     update_position_with(current, &to_left/1)
   end
