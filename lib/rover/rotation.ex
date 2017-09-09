@@ -1,14 +1,14 @@
 defmodule Rover.Rotation do
   def rotate_left(current) do
-    update_position_with(current, &to_left/1)
+    update_facing_with(current, &to_left/1)
   end
 
   def rotate_right(current) do
-    update_position_with(current, &to_right/1)
+    update_facing_with(current, &to_right/1)
   end
 
-  defp update_position_with(current, update_fn) do
-    put_elem(current, 2, update_fn.(elem(current, 2)))
+  defp update_facing_with(current, update_fn) do
+    %{current | facing: update_fn.(current.facing) }
   end
 
   defp to_left("N"), do: "W"

@@ -3,7 +3,7 @@ defmodule CollisionTest do
 
   describe "moving rover with no obstacle" do
     test "moves him to the target position" do
-      new_world =
+      {:ok, new_world} =
         World.empty(10, 10)
         |> World.put_rover(5, 5, "N")
         |> World.move_rover_forward
@@ -14,13 +14,13 @@ defmodule CollisionTest do
 
   describe "moving rover with an obstacle in the way" do
     test "does not move rover" do
-      new_world =
+      result =
         World.empty(10, 10)
         |> World.put_rover(5, 5, "N")
         |> World.put_obstacle(6, 5)
         |> World.move_rover_forward
 
-      assert(Rover.position(new_world.rover) == {5, 5})
+      assert({:err, :collision} = result)
     end
   end
 end
