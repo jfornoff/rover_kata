@@ -7,7 +7,7 @@ defmodule StepSequenceTest do
         World.empty(10, 10)
         |> World.RoverMovement.execute_sequence("F")
 
-      assert(result == {:err, :no_rover})
+      assert result == {:err, :no_rover}
     end
   end
 
@@ -18,7 +18,7 @@ defmodule StepSequenceTest do
         |> World.put_rover(5, 5, "N")
         |> World.RoverMovement.execute_sequence("")
 
-      assert(Rover.position(world.rover) == {5, 5})
+      assert Rover.position(world.rover) == {5, 5}
     end
   end
 
@@ -29,7 +29,7 @@ defmodule StepSequenceTest do
         |> World.put_rover(5, 5, "N")
         |> World.RoverMovement.execute_sequence("FF")
 
-      assert(Rover.position(new_world.rover) == {7, 5})
+      assert Rover.position(new_world.rover) == {5, 7}
     end
   end
 
@@ -39,7 +39,7 @@ defmodule StepSequenceTest do
       |> World.put_rover(5, 5, "N")
       |> World.RoverMovement.execute_sequence("FLFFRF")
 
-    assert(Rover.position(new_world.rover) == {7, 3})
+    assert Rover.position(new_world.rover) == {3, 7}
   end
 
   describe "sequence for driving a circle" do
@@ -49,7 +49,7 @@ defmodule StepSequenceTest do
         |> World.put_rover(5, 5, "N")
         |> World.RoverMovement.execute_sequence("FLFLFLF")
 
-      assert(Rover.position(new_world.rover) == {5, 5})
+      assert Rover.position(new_world.rover) == {5, 5}
     end
 
     test "turning right" do
@@ -58,7 +58,7 @@ defmodule StepSequenceTest do
         |> World.put_rover(5, 5, "N")
         |> World.RoverMovement.execute_sequence("FRFRFRF")
 
-      assert(Rover.position(new_world.rover) == {5, 5})
+      assert Rover.position(new_world.rover) == {5, 5}
     end
   end
 
@@ -67,10 +67,48 @@ defmodule StepSequenceTest do
       result =
         World.empty(10, 10)
         |> World.put_rover(5, 5, "N")
-        |> World.put_obstacle(6, 5)
+        |> World.put_obstacle(5, 6)
         |> World.RoverMovement.execute_sequence("F")
 
-      assert({:stopped, :collision} = result)
+      assert {:stopped, :collision} = result
+    end
+  end
+
+  describe "step sequence wrapping the grid" do
+    test "top border" do
+      {:ok, new_world} =
+        World.empty(10, 10)
+        |> World.put_rover(0, 9, "N")
+        |> World.RoverMovement.execute_sequence("F")
+
+      assert Rover.position(new_world.rover) == {0, 0}
+    end
+
+    test "bottom border" do
+      {:ok, new_world} =
+        World.empty(10, 10)
+        |> World.put_rover(0, 0, "S")
+        |> World.RoverMovement.execute_sequence("F")
+
+      assert Rover.position(new_world.rover) == {0, 9}
+    end
+
+    test "left border" do
+      {:ok, new_world} =
+        World.empty(10, 10)
+        |> World.put_rover(0, 0, "W")
+        |> World.RoverMovement.execute_sequence("F")
+
+      assert Rover.position(new_world.rover) == {9, 0}
+    end
+
+    test "right border" do
+      {:ok, new_world} =
+        World.empty(10, 10)
+        |> World.put_rover(9, 0, "E")
+        |> World.RoverMovement.execute_sequence("F")
+
+      assert Rover.position(new_world.rover) == {0, 0}
     end
   end
 end

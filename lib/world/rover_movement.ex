@@ -1,9 +1,11 @@
 defmodule World.RoverMovement do
-  def execute_sequence(%World.State{rover: nil}, _sequence_definition), do: {:err, :no_rover}
+  def execute_sequence(%World.State{rover: nil}, _sequence_definition) do
+    {:err, :no_rover}
+  end
 
   def execute_sequence(%World.State{} = world, sequence_definition) do
     sequence_definition
-    |> String.codepoints
+    |> String.codepoints()
     |> Enum.reduce_while({:ok, world}, fn step_letter, {:ok, current_world} ->
       case execute_step(current_world, step_letter) do
         {:ok, new_world} -> {:cont, {:ok, new_world}}
@@ -13,7 +15,7 @@ defmodule World.RoverMovement do
   end
 
   def execute_step(%World.State{} = world, "F") do
-    move_rover_forward(world)
+    move_rover_forward world
   end
 
   def execute_step(%World.State{} = world, "L") do
@@ -25,20 +27,28 @@ defmodule World.RoverMovement do
   end
 
   def move_rover_forward(%World.State{} = world) do
-    new_rover = Rover.Movement.move_forward(world.rover)
+    new_rover =
+      world.rover
+      |> Rover.Movement.move_forward()
+      |> wrap_if_needed(world)
 
     if collision?(world, new_rover) do
       {:err, :collision}
     else
-      { :ok, %{ world | rover: new_rover } }
+      {:ok, %{world | rover: new_rover}}
     end
   end
 
-  defp update_rover_with(%World.State{} = world, update_fn) do
-    %{ world | rover: update_fn.(world.rover) }
+  def wrap_if_needed(rover, %World.State{width: width, height: height} = world) do
+    %{rover | x: rem(rover.x + width, width), y: rem(rover.y + height, height)}
   end
 
+  defp update_rover_with(%World.State{} = world, update_fn) do
+    %{world | rover: update_fn.(world.rover)}
+  end
+
+
   defp collision?(%World.State{obstacles: obstacles}, %Rover.State{} = rover) do
-    MapSet.member?(obstacles, Rover.position(rover))
+    MapSet.member? obstacles, Rover.position(rover)
   end
 end
