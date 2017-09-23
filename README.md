@@ -1,2 +1,2 @@
 # RoverKata
-This is a exercise to tighten up my Elixir development workflow and Editor configuration mainly.
+This is an exercise to tighten up my Elixir development workflow and Editor configuration mainly.
