@@ -39,7 +39,7 @@ defmodule World.RoverMovement do
     end
   end
 
-  def wrap_if_needed(rover, %World.State{width: width, height: height} = world) do
+  def wrap_if_needed(rover, %World.State{width: width, height: height}) do
     %{rover | x: rem(rover.x + width, width), y: rem(rover.y + height, height)}
   end
 
