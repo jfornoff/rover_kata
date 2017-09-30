@@ -1,5 +1,7 @@
 defmodule StepSequenceTest do
   use ExUnit.Case, async: true
+  require Rover.Direction
+  alias Rover.Direction
 
   describe "step sequence with no Rover added to the world" do
     test "returns an error" do
@@ -15,7 +17,7 @@ defmodule StepSequenceTest do
     test "test name" do
       {:ok, world} =
         World.empty(10, 10)
-        |> World.put_rover(5, 5, "N")
+        |> World.put_rover(5, 5, Direction.north)
         |> World.RoverMovement.execute_sequence("")
 
       assert Rover.position(world.rover) == {5, 5}
@@ -26,7 +28,7 @@ defmodule StepSequenceTest do
     test "moves Rover forward twice" do
       {:ok, new_world} =
         World.empty(10, 10)
-        |> World.put_rover(5, 5, "N")
+        |> World.put_rover(5, 5, Direction.north)
         |> World.RoverMovement.execute_sequence("FF")
 
       assert Rover.position(new_world.rover) == {5, 7}
@@ -36,7 +38,7 @@ defmodule StepSequenceTest do
   describe "sequence including turns" do
     {:ok, new_world} =
       World.empty(10, 10)
-      |> World.put_rover(5, 5, "N")
+      |> World.put_rover(5, 5, Direction.north)
       |> World.RoverMovement.execute_sequence("FLFFRF")
 
     assert Rover.position(new_world.rover) == {3, 7}
@@ -46,7 +48,7 @@ defmodule StepSequenceTest do
     test "turning left" do
       {:ok, new_world} =
         World.empty(10, 10)
-        |> World.put_rover(5, 5, "N")
+        |> World.put_rover(5, 5, Direction.north)
         |> World.RoverMovement.execute_sequence("FLFLFLF")
 
       assert Rover.position(new_world.rover) == {5, 5}
@@ -55,7 +57,7 @@ defmodule StepSequenceTest do
     test "turning right" do
       {:ok, new_world} =
         World.empty(10, 10)
-        |> World.put_rover(5, 5, "N")
+        |> World.put_rover(5, 5, Direction.north)
         |> World.RoverMovement.execute_sequence("FRFRFRF")
 
       assert Rover.position(new_world.rover) == {5, 5}
@@ -66,7 +68,7 @@ defmodule StepSequenceTest do
     test "returns a {:stopped, :collision} message" do
       result =
         World.empty(10, 10)
-        |> World.put_rover(5, 5, "N")
+        |> World.put_rover(5, 5, Direction.north)
         |> World.put_obstacle(5, 6)
         |> World.RoverMovement.execute_sequence("F")
 
@@ -78,7 +80,7 @@ defmodule StepSequenceTest do
     test "top border" do
       {:ok, new_world} =
         World.empty(10, 10)
-        |> World.put_rover(0, 9, "N")
+        |> World.put_rover(0, 9, Direction.north)
         |> World.RoverMovement.execute_sequence("F")
 
       assert Rover.position(new_world.rover) == {0, 0}
@@ -87,7 +89,7 @@ defmodule StepSequenceTest do
     test "bottom border" do
       {:ok, new_world} =
         World.empty(10, 10)
-        |> World.put_rover(0, 0, "S")
+        |> World.put_rover(0, 0, Direction.south)
         |> World.RoverMovement.execute_sequence("F")
 
       assert Rover.position(new_world.rover) == {0, 9}
@@ -96,7 +98,7 @@ defmodule StepSequenceTest do
     test "left border" do
       {:ok, new_world} =
         World.empty(10, 10)
-        |> World.put_rover(0, 0, "W")
+        |> World.put_rover(0, 0, Direction.west)
         |> World.RoverMovement.execute_sequence("F")
 
       assert Rover.position(new_world.rover) == {9, 0}
@@ -105,7 +107,7 @@ defmodule StepSequenceTest do
     test "right border" do
       {:ok, new_world} =
         World.empty(10, 10)
-        |> World.put_rover(9, 0, "E")
+        |> World.put_rover(9, 0, Direction.east)
         |> World.RoverMovement.execute_sequence("F")
 
       assert Rover.position(new_world.rover) == {0, 0}
